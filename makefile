@@ -21,3 +21,11 @@ broadcast:
 
 broadcast-test:
 	./maelstrom/maelstrom test -w broadcast --bin ./maelstrom/maelstrom-broadcast --node-count 5 --time-limit 20 --rate 10
+
+counter:
+	set GOARCH=amd64
+	set GOOS=linux
+	go build -o ./maelstrom/maelstrom-counter ./cmd/dist-counter/main.go
+
+counter-test:
+	./maelstrom/maelstrom test -w g-counter --bin ./maelstrom/maelstrom-counter --node-count 3 --rate 100 --time-limit 20 --nemesis partition
