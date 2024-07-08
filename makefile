@@ -13,3 +13,11 @@ generate-id:
 
 generate-id-test:
 	./maelstrom/maelstrom test -w unique-ids --bin ./maelstrom/maelstrom-unique-ids --time-limit 30 --rate 1000 --node-count 3 --availability total --nemesis partition
+
+broadcast:
+	set GOARCH=amd64
+	set GOOS=linux
+	go build -o ./maelstrom/maelstrom-broadcast ./cmd/broadcast/main.go
+
+broadcast-test:
+	./maelstrom/maelstrom test -w broadcast --bin ./maelstrom/maelstrom-broadcast --node-count 5 --time-limit 20 --rate 10
