@@ -8,9 +8,9 @@ import (
 )
 
 func main() {
-	store := make(LogStore)
-
 	n := maelstrom.NewNode()
+
+	store := NewStore(n)
 
 	n.Handle("send", func(msg maelstrom.Message) error {
 		var body SendMsg
@@ -51,10 +51,7 @@ func main() {
 		}
 
 		for k, v := range body.Offsets {
-			if store[k] == nil {
-				store[k] = &Logs{}
-			}
-			store[k].Committed = v
+			store.Commit(k, v)
 		}
 
 		return n.Reply(msg, map[string]string{
@@ -70,10 +67,7 @@ func main() {
 
 		res := make(map[string]int)
 		for _, v := range body.Keys {
-			if store[v] == nil {
-				store[v] = &Logs{}
-			}
-			res[v] = store[v].Committed
+			res[v] = store.Committed(v)
 		}
 
 		return n.Reply(msg, map[string]any{
@@ -85,37 +79,6 @@ func main() {
 	if err := n.Run(); err != nil {
 		log.Fatal(err)
 	}
-}
-
-type Logs struct {
-	List      []int
-	Committed int
-}
-
-type LogStore map[string]*Logs
-
-func (s LogStore) CreateIfNotExist(Key string) {
-	if s[Key] == nil {
-		s[Key] = &Logs{}
-	}
-}
-
-func (s LogStore) Save(key string, value int) int {
-	s.CreateIfNotExist(key)
-	s[key].List = append(s[key].List, value)
-
-	return len(s[key].List) - 1
-}
-
-func (s LogStore) Poll(key string, offset int) [][2]int {
-	s.CreateIfNotExist(key)
-	res := [][2]int{}
-
-	for i := offset; i < len(s[key].List); i++ {
-		res = append(res, [2]int{i, s[key].List[i]})
-	}
-
-	return res
 }
 
 type SendMsg struct {

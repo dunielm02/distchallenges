@@ -33,7 +33,7 @@ counter-test:
 kafka:
 	set GOARCH=amd64
 	set GOOS=linux
-	go build -o ./maelstrom/maelstrom-kafka ./cmd/kafka/main.go
+	go build -o ./maelstrom/maelstrom-kafka ./cmd/kafka/
 
 kafka-test:
-	./maelstrom/maelstrom test -w kafka --bin ./maelstrom/maelstrom-kafka --node-count 1 --concurrency 2n --time-limit 20 --rate 1000
+	./maelstrom/maelstrom test -w kafka --bin ./maelstrom/maelstrom-kafka --node-count 2 --concurrency 2n --time-limit 20 --rate 1000
